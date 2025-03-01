@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, People
+from models import db, User, People, Planet
 
 
 #from models import Person
@@ -75,8 +75,12 @@ def handle_hello():
 #   * GET people
 @app.route('/people', methods=['GET'])
 def get_people():
+    people = People.query.all()
+    all_people = list(map(lambda person: person.serialize(),people))
+
     response_body = {
-        "msg": "You're in get_people"
+        "msg": "You're in get_people",
+        "data": all_people
     }
     return jsonify(response_body), 200
 
@@ -92,11 +96,21 @@ def get_individual_person(people_id):
 @app.route('/people', methods=['POST'])
 def post_person():
     data = request.get_json()
+
+    name = data["name"]
+    age = data["age"]
+    eye_color = data["eye_color"]
+
+    new_person = People(name=name, age=age, eye_color=eye_color)
+
+    db.session.add(new_person)
+    db.session.commit()
+
     response_body = {
         "msg": f"You're in post_person",
         "received_data": data
     }
-    return jsonify(response_body), 200
+    return jsonify(response_body), 201
 
 #   * PUT people
 @app.route('/people/<int:people_id>', methods=['PUT'])
@@ -145,6 +159,43 @@ def put_planet(planet_id):
         "received_data": data
     }
     return jsonify(response_body), 200
+
+########################################################################################
+# General add_record function
+def add_record(table_model, required_keys):
+    """
+    Generalized function to add a record to any table.
+    
+    Parameters:
+    - table_model: SQLAlchemy model class (e.g., People, Planet)
+    - required_keys: Set of required column names
+    
+    Returns:
+    - JSON response with inserted data or error message
+    """
+    # Get the incoming request body
+    request_body = request.get_json(force=True)
+    
+    # Get the keys sent in the request
+    request_keys = set(request_body.keys())
+
+    # Check which required fields are missing
+    missing_fields = required_keys - request_keys
+    if missing_fields:
+        return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+
+    # Only keep the required fields in the request
+    filtered_data = {key: request_body[key] for key in required_keys if key in request_body}
+
+    # Insert record into the specified table
+    with Session(engine) as session:
+        new_record = table_model(**filtered_data)  # Create an instance of the model
+        session.add(new_record)
+        session.commit()
+        session.refresh(new_record)  # Get the auto-generated ID
+
+    return jsonify(new_record.__dict__), 201  # Return the new record as JSON
+
 
 
 #################################################################################

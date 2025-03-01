@@ -4,11 +4,11 @@ from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 from sqlalchemy import create_engine, String, Boolean, ForeignKey, DateTime, func
 from flask_sqlalchemy import SQLAlchemy
 
-Base = declarative_base()
+# Base = declarative_base()
 
 db = SQLAlchemy()
 
-class User(Base):
+class User(db.Model):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -18,8 +18,17 @@ class User(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            "is_active": self.is_active,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+    }
 
-class Favorite(Base):
+
+class Favorite(db.Model):
     __tablename__ = "favorite"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -29,8 +38,17 @@ class Favorite(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "type": self.type,
+            "user_id": self.user_id,
+            "item_id": self.item_id,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+        }
 
-class Planet(Base):
+class Planet(db.Model):
     __tablename__ = "planet"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -40,21 +58,35 @@ class Planet(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
-class People(Base):
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "climate": self.climate,
+            "population": self.population,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+        }
+
+class People(db.Model):
     __tablename__ = "people"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     age: Mapped[str] = mapped_column(nullable=False)
     eye_color: Mapped[str] = mapped_column(nullable=False)
-    home_planet: Mapped[int] = mapped_column(ForeignKey("planet.id"))
+    # home_planet_id: Mapped[int] = mapped_column(ForeignKey("planet.id"))
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-
 
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.email,
+            "name": self.name,
+            "age": self.age,
+            "eye_color": self.eye_color,
+            # "home_planet": self.home_planet,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
             # do not serialize the password, its a security breach
         }
