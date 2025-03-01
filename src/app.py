@@ -8,7 +8,9 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, People
+
+
 #from models import Person
 
 app = Flask(__name__)
@@ -45,6 +47,107 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+
+# APIs for:
+#   People
+#   * GET people
+#   * GET individual people
+#   * POST people
+#   * PUT people
+#   * DELETE people
+#   
+#   Planets
+#   * GET planets
+#   * GET individual planet
+#   * POST planet
+#   * PUT planet
+#   * DELETE planet
+# 
+#   Users
+#   * GET users
+#   * GET users favorites
+#
+#   Favorites
+#   * POST favorite
+#   * DELETE favorite
+
+#   People
+#   * GET people
+@app.route('/people', methods=['GET'])
+def get_people():
+    response_body = {
+        "msg": "You're in get_people"
+    }
+    return jsonify(response_body), 200
+
+#   * GET individual person
+@app.route('/people/<int:people_id>', methods=['GET'])
+def get_individual_person(people_id):
+    response_body = {
+        "msg": f"You're in get_individual_person with ID {people_id}"
+    }
+    return jsonify(response_body), 200
+
+#   * POST people
+@app.route('/people', methods=['POST'])
+def post_person():
+    data = request.get_json()
+    response_body = {
+        "msg": f"You're in post_person",
+        "received_data": data
+    }
+    return jsonify(response_body), 200
+
+#   * PUT people
+@app.route('/people/<int:people_id>', methods=['PUT'])
+def put_person(people_id):
+    data = request.get_json()
+    response_body = {
+        "msg": f"You're in put_person with ID {people_id}",
+        "received_data": data
+    }
+    return jsonify(response_body), 200
+
+
+#   Planets
+#   * GET Planets
+@app.route('/planet', methods=['GET'])
+def get_planet():
+    response_body = {
+        "msg": "You're in get_planet"
+    }
+    return jsonify(response_body), 200
+
+#   * GET individual pplanet
+@app.route('/planet/<int:planet_id>', methods=['GET'])
+def get_individual_planet(planet_id):
+    response_body = {
+        "msg": f"You're in get_individual_planet with ID {planet_id}"
+    }
+    return jsonify(response_body), 200
+
+#   * POST planet
+@app.route('/planet', methods=['POST'])
+def post_planet():
+    data = request.get_json()
+    response_body = {
+        "msg": f"You're in post_planet",
+        "received_data": data
+    }
+    return jsonify(response_body), 200
+
+#   * PUT planet
+@app.route('/planet/<int:planet_id>', methods=['PUT'])
+def put_planet(planet_id):
+    data = request.get_json()
+    response_body = {
+        "msg": f"You're in put_planet with ID {planet_id}",
+        "received_data": data
+    }
+    return jsonify(response_body), 200
+
+
+#################################################################################
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
