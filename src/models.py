@@ -13,7 +13,7 @@ class User(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(nullable=False)
+    password: Mapped[str] = mapped_column(nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
@@ -75,7 +75,7 @@ class People(db.Model):
     name: Mapped[str] = mapped_column(nullable=False)
     age: Mapped[str] = mapped_column(nullable=False)
     eye_color: Mapped[str] = mapped_column(nullable=False)
-    # home_planet_id: Mapped[int] = mapped_column(ForeignKey("planet.id"))
+    home_planet_id: Mapped[int] = mapped_column(ForeignKey("planet.id"), nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
@@ -85,7 +85,7 @@ class People(db.Model):
             "name": self.name,
             "age": self.age,
             "eye_color": self.eye_color,
-            # "home_planet": self.home_planet,
+            "home_planet_id": self.home_planet_id,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             # do not serialize the password, its a security breach
